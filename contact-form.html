@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>联系我们 | 栋梁学院</title>
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>联系我们</h2>
+        <form id="contact-form">
+            <div class="form-group">
+                <label for="name">姓名</label>
+                <input type="text" id="name" name="name" placeholder="请输入您的姓名" required>
+            </div>
+            <div class="form-group">
+                <label for="email">邮箱</label>
+                <input type="email" id="email" name="email" placeholder="请输入您的邮箱" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">电话</label>
+                <input type="tel" id="phone" name="phone" placeholder="请输入您的联系电话" required>
+            </div>
+            <div class="form-group">
+                <label for="program">感兴趣的项目</label>
+                <select id="program" name="program" required>
+                    <option value="">请选择项目</option>
+                    <option value="youth">青少年领导力计划</option>
+                    <option value="executive">企业高管研修</option>
+                    <option value="startup">创新创业训练营</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="message">留言内容</label>
+                <textarea id="message" name="message" placeholder="请输入您的留言内容" required></textarea>
+            </div>
+            <button type="submit">提交咨询</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('contact-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const submitButton = this.querySelector('button[type="submit"]');
+                const originalText = submitButton.textContent;
+                submitButton.textContent = '提交中...';
+                submitButton.disabled = true;
+                
+                const response = await fetch('http://localhost:3000/api/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('感谢您的咨询！我们的顾问将尽快与您联系。');
+                    this.reset();
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                alert('提交失败，请稍后重试。');
+            } finally {
+                const submitButton = this.querySelector('button[type="submit"]');
+                submitButton.textContent = '提交咨询';
+                submitButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html> 
